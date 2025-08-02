@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Calendar, Clock, ArrowUp, ArrowDown, Eye } from "lucide-react"
+import { Calendar, Clock, ArrowUp, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { BlogPost } from "@/lib/types"
@@ -31,34 +31,38 @@ export function BlogCard({ blog }: BlogCardProps) {
                 {blog.title}
               </h2>
             </Link>
-            <p className="text-muted-foreground mt-2 line-clamp-3">{blog.summary}</p>
+            <p className="text-muted-foreground mt-2 line-clamp-3">{blog.excerpt}</p>
           </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link
-                href={`/author/${blog.author.id}`}
-                className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={blog.author.avatar || "/placeholder.svg"} alt={blog.author.name} />
-                  <AvatarFallback>{blog.author.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium text-foreground">{blog.author.name}</span>
-              </Link>
+              {blog.author && (
+                <Link
+                  href={`/author/${blog.author.id}`}
+                  className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={blog.author.avatar || "/placeholder.svg"} alt={blog.author.username} />
+                    <AvatarFallback>{blog.author.username.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-foreground">{blog.author.username}</span>
+                </Link>
+              )}
 
               <div className="flex items-center text-xs text-muted-foreground space-x-3">
                 <div className="flex items-center space-x-1">
                   <Calendar className="h-3 w-3" />
                   <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <Clock className="h-3 w-3" />
-                  <span>{blog.readTime} min read</span>
-                </div>
+                {blog.readingTime && (
+                  <div className="flex items-center space-x-1">
+                    <Clock className="h-3 w-3" />
+                    <span>{blog.readingTime} min read</span>
+                  </div>
+                )}
                 <div className="flex items-center space-x-1">
                   <Eye className="h-3 w-3" />
-                  <span>{blog.readCount}</span>
+                  <span>{blog.views}</span>
                 </div>
               </div>
             </div>
@@ -68,14 +72,18 @@ export function BlogCard({ blog }: BlogCardProps) {
                 <ArrowUp className="h-3 w-3 mr-1" />
                 <span className="text-xs">{blog.upvotes}</span>
               </Button>
-              <Button variant="ghost" size="sm" className="h-8 px-2">
-                <ArrowDown className="h-3 w-3 mr-1" />
-                <span className="text-xs">{blog.downvotes}</span>
-              </Button>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
+            {blog.category && (
+              <Link
+                href={`/?category=${blog.category.slug}`}
+                className="px-2 py-1 bg-primary/10 text-primary rounded-md text-xs hover:bg-primary/20 transition-colors"
+              >
+                {blog.category.name}
+              </Link>
+            )}
             {blog.tags.slice(0, 3).map((tag) => (
               <Link
                 key={tag.id}

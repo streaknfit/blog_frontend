@@ -1,53 +1,34 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowUp, ArrowDown } from "lucide-react"
+import { ArrowUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import { blogApi } from "@/lib/api"
 
 interface VotingControlsProps {
-  blogId: string
+  blogId: number
   upvotes: number
-  downvotes: number
 }
 
-export function VotingControls({ blogId, upvotes, downvotes }: VotingControlsProps) {
+export function VotingControls({ blogId, upvotes }: VotingControlsProps) {
   const [currentUpvotes, setCurrentUpvotes] = useState(upvotes)
-  const [currentDownvotes, setCurrentDownvotes] = useState(downvotes)
-  const [userVote, setUserVote] = useState<"up" | "down" | null>(null)
+  const [userVote, setUserVote] = useState<"up" | null>(null)
   const { toast } = useToast()
 
-  const handleVote = async (type: "up" | "down") => {
+  const handleVote = async (type: "up") => {
     try {
-      // Simulate API call
       if (userVote === type) {
         // Remove vote
-        if (type === "up") {
-          setCurrentUpvotes((prev) => prev - 1)
-        } else {
-          setCurrentDownvotes((prev) => prev - 1)
-        }
+        setCurrentUpvotes((prev) => prev - 1)
         setUserVote(null)
       } else {
-        // Add vote or change vote
-        if (userVote) {
-          // Change vote
-          if (userVote === "up") {
-            setCurrentUpvotes((prev) => prev - 1)
-            setCurrentDownvotes((prev) => prev + 1)
-          } else {
-            setCurrentDownvotes((prev) => prev - 1)
-            setCurrentUpvotes((prev) => prev + 1)
-          }
-        } else {
-          // New vote
-          if (type === "up") {
-            setCurrentUpvotes((prev) => prev + 1)
-          } else {
-            setCurrentDownvotes((prev) => prev + 1)
-          }
-        }
+        // Add vote
+        setCurrentUpvotes((prev) => prev + 1)
         setUserVote(type)
+        
+        // Call API to increment upvotes
+        await blogApi.incrementUpvotes(blogId)
       }
 
       toast({
@@ -71,15 +52,6 @@ export function VotingControls({ blogId, upvotes, downvotes }: VotingControlsPro
       >
         <ArrowUp className="h-3 w-3 mr-1" />
         <span className="text-xs">{currentUpvotes}</span>
-      </Button>
-      <Button
-        variant={userVote === "down" ? "default" : "outline"}
-        size="sm"
-        onClick={() => handleVote("down")}
-        className="h-8"
-      >
-        <ArrowDown className="h-3 w-3 mr-1" />
-        <span className="text-xs">{currentDownvotes}</span>
       </Button>
     </div>
   )

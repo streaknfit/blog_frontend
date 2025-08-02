@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Share2, Twitter, Linkedin, Mail, LinkIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
@@ -11,15 +12,21 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ url, title }: ShareButtonsProps) {
   const { toast } = useToast()
-  const fullUrl = `${window.location.origin}${url}`
+  const [fullUrl, setFullUrl] = useState('')
+
+  useEffect(() => {
+    setFullUrl(`${window.location.origin}${url}`)
+  }, [url])
 
   const shareLinks = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(fullUrl)}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(fullUrl)}`,
-    email: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`Check out this article: ${fullUrl}`)}`,
+    twitter: fullUrl ? `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(fullUrl)}` : '#',
+    linkedin: fullUrl ? `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(fullUrl)}` : '#',
+    email: fullUrl ? `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`Check out this article: ${fullUrl}`)}` : '#',
   }
 
   const copyToClipboard = async () => {
+    if (!fullUrl) return
+    
     try {
       await navigator.clipboard.writeText(fullUrl)
       toast({

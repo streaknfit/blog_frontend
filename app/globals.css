@@ -121,3 +121,80 @@
 .prose li {
   @apply leading-relaxed;
 }
+
+/* Syntax highlighting styles */
+.hljs {
+  @apply bg-secondary text-foreground;
+}
+
+.hljs-keyword {
+  @apply text-purple-500;
+}
+
+.hljs-string {
+  @apply text-green-500;
+}
+
+.hljs-comment {
+  @apply text-muted-foreground italic;
+}
+
+.hljs-function {
+  @apply text-blue-500;
+}
+
+.hljs-number {
+  @apply text-orange-500;
+}
+
+.hljs-operator {
+  @apply text-foreground;
+}
+
+.hljs-punctuation {
+  @apply text-foreground;
+}
+
+.hljs-variable {
+  @apply text-cyan-500;
+}
+
+.hljs-title {
+  @apply text-blue-500;
+}
+
+.hljs-attr {
+  @apply text-yellow-500;
+}
+
+.hljs-built_in {
+  @apply text-purple-500;
+}
+
+.hljs-literal {
+  @apply text-orange-500;
+}
+
+.hljs-params {
+  @apply text-foreground;
+}
+
+.hljs-property {
+  @apply text-cyan-500;
+}
+
+.hljs-tag {
+  @apply text-red-500;
+}
+
+.hljs-name {
+  @apply text-red-500;
+}
+
+.hljs-attribute {
+  @apply text-yellow-500;
+}
+
+.hljs-value {
+  @apply text-green-500;
+}

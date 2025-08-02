@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Search, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { Logo } from "@/components/logo"
 import { useState } from "react"
 
 export function Header() {
@@ -14,10 +15,8 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">B</span>
-            </div>
-            <span className="font-bold text-xl font-serif">ModernBlog</span>
+            <Logo className="h-12 w-12" />
+            <span className="font-bold text-xl font-serif">StreakNFit Blog</span>
           </Link>
 
           {/* Desktop Navigation */}
