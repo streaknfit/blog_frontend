@@ -179,7 +179,7 @@ const strapiConfig = {
         config: {
           enabled: true,
           headers: '*',
-          origin: ['http://localhost:3000', 'https://yourdomain.com']
+          origin: ['http://localhost:3000', 'https://backend.blog.streaknfit.com']
         }
       },
       'strapi::poweredBy',

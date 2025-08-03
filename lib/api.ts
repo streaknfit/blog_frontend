@@ -19,7 +19,7 @@ const API_CONFIG = {
 // Helper function to get full URL for media
 const getMediaUrl = (url: string): string => {
   if (url.startsWith('http')) return url
-  return `https://backend.blog.streaknfit.com${url}`
+  return `${process.env.BACKEND_URL}${url}`
 }
 
 // Helper function to get base URL for API requests

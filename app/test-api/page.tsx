@@ -75,7 +75,7 @@ export default function TestApiPage() {
     setTestType("Raw API (Direct)")
 
     try {
-      const baseUrl = 'https://backend.blog.streaknfit.com'
+      const baseUrl = process.env.BACKEND_URL
       const url = `${baseUrl}/api/blogs?populate=*`
       
       console.log('Testing Raw API URL:', url)
@@ -166,7 +166,7 @@ export default function TestApiPage() {
             </div>
             
             <div className="text-sm text-muted-foreground">
-              <p>Base URL: https://backend.blog.streaknfit.com</p>
+              <p>Base URL: ${process.env.BACKEND_URL}</p>
               <p>Secure Proxy: /api/strapi</p>
               <p>Current Test: {testType || 'None'}</p>
               <p className="mt-2 text-xs">

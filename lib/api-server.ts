@@ -6,7 +6,7 @@ import type {
   Comment
 } from './types'
 
-const STRAPI_BASE_URL = 'https://backend.blog.streaknfit.com'
+const STRAPI_BASE_URL = process.env.BACKEND_URL
 const STRAPI_READ_TOKEN = process.env.STRAPI_READ_TOKEN
 const STRAPI_WRITE_TOKEN = process.env.STRAPI_WRITE_TOKEN
 

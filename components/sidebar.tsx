@@ -49,7 +49,7 @@ export function Sidebar({ tags, categories }: SidebarProps) {
                 >
                   {category.icon?.data?.attributes?.url ? (
                     <img
-                      src={`https://backend.blog.streaknfit.com${category.icon.data.attributes.url}`}
+                      src={`${process.env.BACKEND_URL}${category.icon.data.attributes.url}`}
                       alt={category.name}
                       className="h-10 w-10 rounded-full object-cover"
                     />
