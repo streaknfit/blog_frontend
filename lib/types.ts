@@ -87,6 +87,13 @@ export interface Category {
   blogs?: Blog[]
 }
 
+// Rich Text Node Type
+export interface RichTextNode {
+  type: string
+  text?: string
+  children?: RichTextNode[]
+}
+
 // Comment Type
 export interface Comment {
   id: number
@@ -94,7 +101,7 @@ export interface Comment {
   name: string
   email: string
   approved: boolean
-  message: string
+  message: string | RichTextNode[]
   createdAt: string
   updatedAt: string
   publishedAt?: string
@@ -129,6 +136,7 @@ export interface Blog {
 // Frontend-friendly types (transformed from API data)
 export interface BlogPost {
   id: number
+  documentId?: string
   title: string
   slug: string
   content: string

@@ -6,6 +6,7 @@ import { ShareButtons } from "@/components/share-buttons"
 import { RelatedPosts } from "@/components/related-posts"
 import { CommentSection } from "@/components/comment-section"
 import { serverBlogApi } from "@/lib/api-server"
+import { serverCommentApi } from "@/lib/api-server"
 import type { BlogPost } from "@/lib/types"
 
 interface BlogPageProps {
@@ -27,6 +28,9 @@ export default async function BlogPage({ params }: BlogPageProps) {
   // } catch (error) {
   //   console.error('Failed to increment views:', error)
   // }
+
+  // Fetch comments server-side
+  const comments = await serverCommentApi.getByBlog(blog.id)
 
   return (
     <div className="min-h-screen bg-background">
@@ -79,7 +83,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
       {/* Comments Section */}
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <CommentSection blogId={blog.id} />
+        <CommentSection blogId={blog.id} blogDocumentId={blog.documentId} initialComments={comments} />
       </div>
 
       <div className="container mx-auto px-4 py-8">

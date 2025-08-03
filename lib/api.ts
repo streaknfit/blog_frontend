@@ -9,6 +9,7 @@ import type {
   Comment,
   ApiConfig 
 } from './types'
+import { plainTextToRichText } from './utils'
 
 // API Configuration - Now using server-side proxy
 const API_CONFIG = {
@@ -44,6 +45,7 @@ const transformBlog = (blogData: any): BlogPost => {
   
   return {
     id: blogData.id,
+    documentId: blogData.documentId,
     title: blogData.title || 'Untitled',
     slug: blogData.slug || `blog-${blogData.id}`,
     content: blogData.content || '',
@@ -107,11 +109,17 @@ const apiRequest = async <T>(
     url.searchParams.append('write', 'true')
   }
 
+  // Add security header for all requests (server-side only)
+  let headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  }
+  if (typeof window === 'undefined' && process.env.INTERNAL_API_SECRET) {
+    headers['x-internal-api-secret'] = process.env.INTERNAL_API_SECRET
+  }
+
   const config: RequestInit = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
+    headers,
     ...options,
   }
 
@@ -365,17 +373,28 @@ export const commentApi = {
     name: string
     email: string
     message: string
-    blog: number
+    blog: number | string
   }): Promise<Comment> => {
     const endpoint = '/comments'
+    
+    // Convert plain text message to rich text format
+    const richTextMessage = plainTextToRichText(comment.message)
+    
+    const requestBody = {
+      data: {
+        name: comment.name,
+        email: comment.email,
+        message: richTextMessage,
+        approved: false, // Comments need approval by default
+        blog: comment.blog
+      }
+    }
+    
+    console.log('Creating comment with data:', requestBody)
+    
     const response = await apiRequest<{ data: any }>(endpoint, {
       method: 'POST',
-      body: JSON.stringify({
-        data: {
-          ...comment,
-          approved: false // Comments need approval by default
-        }
-      })
+      body: JSON.stringify(requestBody)
     }, true)
     
     const commentData = response.data

@@ -9,15 +9,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
 import { commentApi } from "@/lib/api"
+import { richTextToPlainText } from "@/lib/utils"
 import type { Comment } from "@/lib/types"
 
 interface CommentSectionProps {
   blogId: number
+  blogDocumentId?: string
+  initialComments?: Comment[]
 }
 
-export function CommentSection({ blogId }: CommentSectionProps) {
-  const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(true)
+export function CommentSection({ blogId, blogDocumentId, initialComments = [] }: CommentSectionProps) {
+  const [comments, setComments] = useState<Comment[]>(initialComments)
+  const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -26,25 +29,7 @@ export function CommentSection({ blogId }: CommentSectionProps) {
   })
   const { toast } = useToast()
 
-  useEffect(() => {
-    fetchComments()
-  }, [blogId])
-
-  const fetchComments = async () => {
-    try {
-      setLoading(true)
-      const fetchedComments = await commentApi.getByBlog(blogId)
-      setComments(fetchedComments)
-    } catch (error) {
-      console.error('Error fetching comments:', error)
-      toast({
-        variant: "destructive",
-        description: "Failed to load comments."
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
+  // Remove useEffect and fetchComments
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,21 +44,27 @@ export function CommentSection({ blogId }: CommentSectionProps) {
 
     try {
       setSubmitting(true)
-      await commentApi.create({
-        name: formData.name,
-        email: formData.email,
-        message: formData.message,
-        blog: blogId
+      // Post to new secure API route
+      const response = await fetch('/api/submit-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          blog: blogDocumentId || blogId
+        })
       })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'Failed to submit comment')
 
       toast({
         description: "Comment submitted successfully! It will be visible after approval."
       })
 
       setFormData({ name: "", email: "", message: "" })
-      
-      // Refresh comments
-      await fetchComments()
+      // Optionally, you could optimistically add the comment to the list here
+      // setComments([...comments, result.comment])
     } catch (error) {
       console.error('Error submitting comment:', error)
       toast({
@@ -179,7 +170,7 @@ export function CommentSection({ blogId }: CommentSectionProps) {
                     </span>
                   </div>
                   <p className="text-sm text-foreground whitespace-pre-wrap">
-                    {comment.message}
+                    {richTextToPlainText(comment.message)}
                   </p>
                 </div>
               </div>

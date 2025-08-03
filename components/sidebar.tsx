@@ -8,91 +8,14 @@ import { tagApi, categoryApi } from "@/lib/api"
 import { mockTags, mockAuthors } from "@/lib/mock-data"
 import type { Tag, Category } from "@/lib/types"
 
-export function Sidebar() {
-  const [tags, setTags] = useState<Tag[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
-  const [usingFallback, setUsingFallback] = useState(false)
+interface SidebarProps {
+  tags: Tag[]
+  categories: Category[]
+}
 
-  useEffect(() => {
-    const fetchSidebarData = async () => {
-      try {
-        setLoading(true)
-        setUsingFallback(false)
-        
-        const [tagsData, categoriesData] = await Promise.all([
-          tagApi.getAll(),
-          categoryApi.getAll()
-        ])
-        
-        setTags(tagsData.slice(0, 8)) // Show top 8 tags
-        setCategories(categoriesData.slice(0, 5)) // Show top 5 categories
-      } catch (error) {
-        console.error('Error fetching sidebar data:', error)
-        
-        // Fall back to mock data
-        if (!usingFallback) {
-          console.log('Falling back to mock sidebar data...')
-          setUsingFallback(true)
-          setTags(mockTags.slice(0, 8))
-          setCategories([]) // No mock categories, so we'll show empty
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchSidebarData()
-  }, [usingFallback])
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Popular Tags</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-6 w-16 bg-muted rounded-full animate-pulse" />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Categories</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex items-center space-x-3">
-                  <div className="h-10 w-10 bg-muted rounded-full animate-pulse" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 w-20 bg-muted rounded animate-pulse" />
-                    <div className="h-3 w-32 bg-muted rounded animate-pulse" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
+export function Sidebar({ tags, categories }: SidebarProps) {
   return (
     <div className="space-y-6">
-      {usingFallback && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-          <p className="text-yellow-800 text-xs">
-            ⚠️ Demo mode: Showing sample tags
-          </p>
-        </div>
-      )}
-      
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Popular Tags</CardTitle>
@@ -111,7 +34,6 @@ export function Sidebar() {
           </div>
         </CardContent>
       </Card>
-
       {categories.length > 0 && (
         <Card>
           <CardHeader>

@@ -1,3 +1,5 @@
+"use client"
+
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
@@ -102,7 +104,7 @@ export function BlogContent({ content }: BlogContentProps) {
               )
             }
             
-            // Handle external URLs
+            // Handle external URLs - removed onError handler to avoid SSR issues
             if (src?.startsWith('http')) {
               return (
                 <img 
@@ -110,10 +112,6 @@ export function BlogContent({ content }: BlogContentProps) {
                   alt={alt || 'Blog image'} 
                   className="max-w-full h-auto rounded-lg my-4 shadow-sm"
                   loading="lazy"
-                  onError={(e) => {
-                    console.error('Image failed to load:', src)
-                    e.currentTarget.style.display = 'none'
-                  }}
                 />
               )
             }

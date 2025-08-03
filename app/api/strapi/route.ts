@@ -5,6 +5,11 @@ const STRAPI_READ_TOKEN = process.env.STRAPI_READ_TOKEN
 const STRAPI_WRITE_TOKEN = process.env.STRAPI_WRITE_TOKEN
 
 export async function GET(request: NextRequest) {
+  // Security: Require internal API secret for all operations
+  const secret = request.headers.get('x-internal-api-secret')
+  if (process.env.INTERNAL_API_SECRET && secret !== process.env.INTERNAL_API_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const { searchParams } = new URL(request.url)
     const endpoint = searchParams.get('endpoint')
@@ -54,6 +59,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Security: Require internal API secret for write operations
+  const secret = request.headers.get('x-internal-api-secret')
+  if (process.env.INTERNAL_API_SECRET && secret !== process.env.INTERNAL_API_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const { searchParams } = new URL(request.url)
     const endpoint = searchParams.get('endpoint')
@@ -70,6 +80,7 @@ export async function POST(request: NextRequest) {
     const url = `${STRAPI_BASE_URL}/api${endpoint}`
 
     console.log('Proxying POST request to:', url)
+    console.log('Request body:', JSON.stringify(body, null, 2))
 
     const response = await fetch(url, {
       method: 'POST',
@@ -101,6 +112,11 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  // Security: Require internal API secret for write operations
+  const secret = request.headers.get('x-internal-api-secret')
+  if (process.env.INTERNAL_API_SECRET && secret !== process.env.INTERNAL_API_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const { searchParams } = new URL(request.url)
     const endpoint = searchParams.get('endpoint')

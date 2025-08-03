@@ -24,6 +24,7 @@ const transformBlog = (blogData: any): BlogPost => {
   
   return {
     id: blogData.id,
+    documentId: blogData.documentId,
     title: blogData.title || 'Untitled',
     slug: blogData.slug || `blog-${blogData.id}`,
     content: blogData.content || '',
@@ -86,12 +87,17 @@ const serverApiRequest = async <T>(
     throw new Error('API token not configured')
   }
 
+  let headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+    ...options.headers,
+  }
+  if (useWriteToken && process.env.INTERNAL_API_SECRET) {
+    headers['x-internal-api-secret'] = process.env.INTERNAL_API_SECRET
+  }
+
   const config: RequestInit = {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      ...options.headers,
-    },
+    headers,
     ...options,
   }
 
@@ -226,6 +232,24 @@ export const serverTagApi = {
       id: tagData.id,
       name: tagData.name,
       slug: tagData.slug
+    }))
+  }
+} 
+
+// Server-side Comment API functions
+export const serverCommentApi = {
+  getByBlog: async (blogId: number): Promise<Comment[]> => {
+    const endpoint = `/comments?filters[blog][id][$eq]=${blogId}&filters[approved][$eq]=true&populate=*&sort=createdAt:desc`
+    const response = await serverApiRequest<{ data: any[], meta: any }>(endpoint)
+    if (!response.data) return []
+    return response.data.map((commentData) => ({
+      id: commentData.id,
+      name: commentData.name,
+      email: commentData.email,
+      approved: commentData.approved,
+      message: commentData.message,
+      createdAt: commentData.createdAt,
+      updatedAt: commentData.updatedAt
     }))
   }
 } 
