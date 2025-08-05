@@ -49,14 +49,11 @@ const transformBlog = (blogData: any): BlogPost => {
     title: blogData.title || 'Untitled',
     slug: blogData.slug || `blog-${blogData.id}`,
     content: blogData.content || '',
-    coverImage: blogData.coverImage?.url 
-      ? getMediaUrl(blogData.coverImage.url)
-      : undefined,
+    coverImageURL: blogData.coverImageURL || undefined,
     excerpt: blogData.excerpt || '',
     readingTime: blogData.readingTime || 0,
     featured: blogData.featured || false,
     views: blogData.views || 0,
-    upvotes: blogData.upvotes || 0,
     createdAt: blogData.createdAt || new Date().toISOString(),
     updatedAt: blogData.updatedAt || new Date().toISOString(),
     publishedAt: blogData.publishedAt || new Date().toISOString(),
@@ -110,10 +107,19 @@ const apiRequest = async <T>(
   }
 
   // Add security header for all requests (server-side only)
-  let headers = {
+  let headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
   }
+  
+  // Add custom headers if provided
+  if (options.headers) {
+    Object.entries(options.headers).forEach(([key, value]) => {
+      if (typeof value === 'string') {
+        headers[key] = value
+      }
+    })
+  }
+  
   if (typeof window === 'undefined' && process.env.INTERNAL_API_SECRET) {
     headers['x-internal-api-secret'] = process.env.INTERNAL_API_SECRET
   }
@@ -244,18 +250,7 @@ export const blogApi = {
     }, true)
   },
 
-  // Increment upvotes
-  incrementUpvotes: async (blogId: number): Promise<void> => {
-    const endpoint = `/blogs/${blogId}`
-    await apiRequest(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify({
-        data: {
-          upvotes: { $increment: 1 }
-        }
-      })
-    }, true)
-  }
+
 }
 
 // Category API functions

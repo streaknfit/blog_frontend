@@ -21,7 +21,7 @@ export interface SEO {
   id?: number
   metaTitle?: string
   metaDescription?: string
-  metaImage?: Media
+  metaImageURL?: string
 }
 
 // Media Type
@@ -115,12 +115,11 @@ export interface Blog {
   title: string
   slug: string
   content: string
-  coverImage?: Media
+  coverImageURL?: string
   excerpt?: string
   readingTime?: number
   featured?: boolean
   views: number
-  upvotes: number
   createdAt: string
   updatedAt: string
   publishedAt: string
@@ -140,12 +139,11 @@ export interface BlogPost {
   title: string
   slug: string
   content: string
-  coverImage?: string
+  coverImageURL?: string
   excerpt?: string
   readingTime?: number
   featured: boolean
   views: number
-  upvotes: number
   createdAt: string
   updatedAt: string
   publishedAt: string

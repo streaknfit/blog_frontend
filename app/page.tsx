@@ -1,24 +1,31 @@
 import { serverBlogApi, serverTagApi, serverCategoryApi } from "@/lib/api-server"
 import { BlogFeed } from "@/components/blog-feed"
 import { SearchBar } from "@/components/search-bar"
-import { FilterTabs } from "@/components/filter-tabs"
 import { Sidebar } from "@/components/sidebar"
+import { generateMetadata as generateSEOMetadata } from "@/components/seo"
+import type { Metadata } from "next"
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generateSEOMetadata({
+    title: 'StreaknFit Blog - Fitness Tips & Workout Routines',
+    description: 'Discover the latest fitness tips, workout routines, and health insights. Get expert advice on training, nutrition, and wellness to achieve your fitness goals.',
+    type: 'website'
+  })
+}
 
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ filter?: string; search?: string; tag?: string; category?: string }>
+  searchParams: Promise<{ search?: string; tag?: string; category?: string; featured?: string }>
 }) {
   const params = await searchParams
 
   // Fetch all data server-side
   const blogsResult = await serverBlogApi.getAll({
     filters: params.tag ? { tags: { slug: { $eq: params.tag } } } :
-            params.category ? { category: { slug: { $eq: params.category } } } : {},
-    sort: params.filter === "trending" ? "upvotes:desc,views:desc"
-         : params.filter === "hot" ? "upvotes:desc"
-         : params.filter === "latest" ? "createdAt:desc"
-         : "createdAt:desc",
+            params.category ? { category: { slug: { $eq: params.category } } } :
+            params.featured ? { featured: { $eq: true } } : {},
+    sort: "createdAt:desc",
     populate: "*",
     pageSize: 12,
   });
@@ -27,11 +34,10 @@ export default async function HomePage({
   const categories = await serverCategoryApi.getAll();
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 py-8">
+    <div className="bg-background">
+      <div className="container mx-auto px-4 py-8">
         <div className="mb-8 space-y-6">
           <SearchBar defaultValue={params.search} />
-          <FilterTabs currentFilter={params.filter} />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
@@ -41,7 +47,7 @@ export default async function HomePage({
             <Sidebar tags={tags} categories={categories} />
           </div>
         </div>
-      </main>
+      </div>
     </div>
   )
 }

@@ -4,6 +4,8 @@ import { Inter, Merriweather } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { LoadingSpinner } from "@/components/loading-spinner"
 import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({
@@ -18,9 +20,54 @@ const merriweather = Merriweather({
 })
 
 export const metadata: Metadata = {
-  title: "Modern Blog - Thoughtful Writing",
-  description: "A modern, minimal blog platform for thoughtful writing and meaningful conversations.",
-    generator: 'v0.dev'
+  title: "StreaknFit Blog - Fitness Tips & Workout Routines",
+  description: "Discover the latest fitness tips, workout routines, and health insights. Get expert advice on training, nutrition, and wellness to achieve your fitness goals.",
+  keywords: "fitness, workout, health, exercise, wellness, training, nutrition, strength training, cardio, yoga, meditation",
+  authors: [{ name: "StreaknFit Team" }],
+  creator: "StreaknFit",
+  publisher: "StreaknFit",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://streaknfit.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://streaknfit.com',
+    siteName: 'StreaknFit Blog',
+    title: 'StreaknFit Blog - Fitness Tips & Workout Routines',
+    description: 'Discover the latest fitness tips, workout routines, and health insights. Get expert advice on training, nutrition, and wellness to achieve your fitness goals.',
+    images: [
+      {
+        url: '/default-og-image.svg',
+        width: 1200,
+        height: 630,
+        alt: 'StreaknFit Blog',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'StreaknFit Blog - Fitness Tips & Workout Routines',
+    description: 'Discover the latest fitness tips, workout routines, and health insights.',
+    images: ['/default-og-image.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 export default function RootLayout({
@@ -32,8 +79,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${merriweather.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <Header />
-          {children}
+          <LoadingSpinner />
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
           <Toaster />
         </ThemeProvider>
       </body>

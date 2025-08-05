@@ -10,11 +10,7 @@ const STRAPI_BASE_URL = process.env.BACKEND_URL
 const STRAPI_READ_TOKEN = process.env.STRAPI_READ_TOKEN
 const STRAPI_WRITE_TOKEN = process.env.STRAPI_WRITE_TOKEN
 
-// Helper function to get full URL for media
-const getMediaUrl = (url: string): string => {
-  if (url.startsWith('http')) return url
-  return `${STRAPI_BASE_URL}${url}`
-}
+
 
 // Helper function to transform blog data to frontend format
 const transformBlog = (blogData: any): BlogPost => {
@@ -28,14 +24,11 @@ const transformBlog = (blogData: any): BlogPost => {
     title: blogData.title || 'Untitled',
     slug: blogData.slug || `blog-${blogData.id}`,
     content: blogData.content || '',
-    coverImage: blogData.coverImage?.url 
-      ? getMediaUrl(blogData.coverImage.url)
-      : undefined,
+    coverImageURL: blogData.coverImageURL || undefined,
     excerpt: blogData.excerpt || '',
     readingTime: blogData.readingTime || 0,
     featured: blogData.featured || false,
     views: blogData.views || 0,
-    upvotes: blogData.upvotes || 0,
     createdAt: blogData.createdAt || new Date().toISOString(),
     updatedAt: blogData.updatedAt || new Date().toISOString(),
     publishedAt: blogData.publishedAt || new Date().toISOString(),
@@ -87,11 +80,20 @@ const serverApiRequest = async <T>(
     throw new Error('API token not configured')
   }
 
-  let headers = {
+  let headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`,
-    ...options.headers,
   }
+  
+  // Add custom headers if provided
+  if (options.headers) {
+    Object.entries(options.headers).forEach(([key, value]) => {
+      if (typeof value === 'string') {
+        headers[key] = value
+      }
+    })
+  }
+  
   if (useWriteToken && process.env.INTERNAL_API_SECRET) {
     headers['x-internal-api-secret'] = process.env.INTERNAL_API_SECRET
   }

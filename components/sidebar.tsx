@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { NavigationLink } from "@/components/navigation-link"
 import { tagApi, categoryApi } from "@/lib/api"
 import { mockTags, mockAuthors } from "@/lib/mock-data"
 import type { Tag, Category } from "@/lib/types"
@@ -16,24 +17,6 @@ interface SidebarProps {
 export function Sidebar({ tags, categories }: SidebarProps) {
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Popular Tags</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <Link
-                key={tag.id}
-                href={`/?tag=${tag.slug}`}
-                className="px-3 py-1 bg-secondary text-secondary-foreground rounded-full text-sm hover:bg-secondary/80 transition-colors"
-              >
-                {tag.name}
-              </Link>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
       {categories.length > 0 && (
         <Card>
           <CardHeader>
@@ -42,14 +25,14 @@ export function Sidebar({ tags, categories }: SidebarProps) {
           <CardContent>
             <div className="space-y-4">
               {categories.map((category) => (
-                <Link
+                <NavigationLink
                   key={category.id}
                   href={`/?category=${category.slug}`}
                   className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
                 >
-                  {category.icon?.data?.attributes?.url ? (
+                  {category.icon?.url ? (
                     <img
-                      src={`${process.env.BACKEND_URL}${category.icon.data.attributes.url}`}
+                      src={category.icon.url}
                       alt={category.name}
                       className="h-10 w-10 rounded-full object-cover"
                     />
@@ -62,7 +45,7 @@ export function Sidebar({ tags, categories }: SidebarProps) {
                     <p className="font-medium text-sm text-foreground truncate">{category.name}</p>
                     <p className="text-xs text-muted-foreground truncate">{category.description}</p>
                   </div>
-                </Link>
+                </NavigationLink>
               ))}
             </div>
           </CardContent>

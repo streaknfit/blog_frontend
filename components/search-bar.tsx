@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Search, X } from "lucide-react"
+import { Search, X, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
@@ -12,10 +12,12 @@ interface SearchBarProps {
 
 export function SearchBar({ defaultValue = "" }: SearchBarProps) {
   const [search, setSearch] = useState(defaultValue)
+  const [isSearching, setIsSearching] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const handleSearch = (value: string) => {
+    setIsSearching(true)
     const params = new URLSearchParams(searchParams)
 
     if (value) {
@@ -27,6 +29,11 @@ export function SearchBar({ defaultValue = "" }: SearchBarProps) {
     router.push(`/?${params.toString()}`)
   }
 
+  // Reset searching state when search params change
+  useEffect(() => {
+    setIsSearching(false)
+  }, [searchParams])
+
   const clearSearch = () => {
     setSearch("")
     handleSearch("")
@@ -35,7 +42,11 @@ export function SearchBar({ defaultValue = "" }: SearchBarProps) {
   return (
     <div className="relative max-w-2xl mx-auto">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        {isSearching ? (
+          <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
+        ) : (
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        )}
         <Input
           type="text"
           placeholder="Search articles, authors, or tags..."

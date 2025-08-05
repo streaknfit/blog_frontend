@@ -1,16 +1,32 @@
 import { notFound } from "next/navigation"
 import { BlogContent } from "@/components/blog-content"
 import { AuthorCard } from "@/components/author-card"
-import { VotingControls } from "@/components/voting-controls"
 import { ShareButtons } from "@/components/share-buttons"
 import { RelatedPosts } from "@/components/related-posts"
 import { CommentSection } from "@/components/comment-section"
+import { Eye } from "lucide-react"
 import { serverBlogApi } from "@/lib/api-server"
 import { serverCommentApi } from "@/lib/api-server"
+import { generateMetadata as generateSEOMetadata, generateStructuredData } from "@/components/seo"
 import type { BlogPost } from "@/lib/types"
+import type { Metadata } from "next"
 
 interface BlogPageProps {
   params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
+  const { slug } = await params
+  const blog = await serverBlogApi.getBySlug(slug)
+  
+  if (!blog) {
+    return {
+      title: 'Blog Post Not Found',
+      description: 'The requested blog post could not be found.',
+    }
+  }
+  
+  return generateSEOMetadata({ blog, type: 'article' })
 }
 
 export default async function BlogPage({ params }: BlogPageProps) {
@@ -32,8 +48,19 @@ export default async function BlogPage({ params }: BlogPageProps) {
   // Fetch comments server-side
   const comments = await serverCommentApi.getByBlog(blog.id)
 
+  // Generate structured data for SEO
+  const structuredData = generateStructuredData(blog)
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
+      {structuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+      )}
       <article className="container mx-auto px-4 py-8 max-w-4xl">
         <header className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">{blog.title}</h1>
@@ -46,19 +73,14 @@ export default async function BlogPage({ params }: BlogPageProps) {
               {blog.readingTime && (
                 <span className="text-sm text-muted-foreground">{blog.readingTime} min read</span>
               )}
-              <VotingControls blogId={blog.id} upvotes={blog.upvotes} />
+              <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                <Eye className="h-4 w-4" />
+                <span>{blog.views || 0} views</span>
+              </div>
             </div>
           </div>
 
-          {blog.coverImage && (
-            <div className="mb-8">
-              <img
-                src={blog.coverImage}
-                alt={blog.title}
-                className="w-full h-64 md:h-96 object-cover rounded-lg"
-              />
-            </div>
-          )}
+
         </header>
 
         <BlogContent content={blog.content} />
