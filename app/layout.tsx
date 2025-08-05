@@ -7,6 +7,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { Toaster } from "@/components/ui/toaster"
+import { Suspense } from "react"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -79,7 +80,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${merriweather.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <LoadingSpinner />
+          <Suspense fallback={null}>
+            <LoadingSpinner />
+          </Suspense>
           <div className="min-h-screen flex flex-col">
             <Header />
             <main className="flex-1">

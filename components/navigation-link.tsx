@@ -15,7 +15,12 @@ export function NavigationLink({ href, children, className = "" }: NavigationLin
   const router = useRouter()
 
   const handleClick = (e: React.MouseEvent) => {
-    // Only handle internal navigation
+    // Allow middle-click, Ctrl+click, and Cmd+click to use default behavior
+    if (e.button === 1 || e.ctrlKey || e.metaKey || e.shiftKey) {
+      return // Let the default behavior handle it completely
+    }
+    
+    // Only handle internal navigation for left-click without modifiers
     if (href.startsWith('/') || href.startsWith('#')) {
       e.preventDefault()
       setIsNavigating(true)

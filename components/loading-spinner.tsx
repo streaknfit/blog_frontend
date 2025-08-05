@@ -1,13 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { usePathname, useSearchParams, useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 export function LoadingSpinner() {
   const [isLoading, setIsLoading] = useState(false)
   const [progress, setProgress] = useState(0)
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const router = useRouter()
 
   useEffect(() => {
@@ -36,7 +35,7 @@ export function LoadingSpinner() {
       clearInterval(progressInterval)
       clearTimeout(timer)
     }
-  }, [pathname, searchParams])
+  }, [pathname])
 
   // Listen for router events for immediate response
   useEffect(() => {
