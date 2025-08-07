@@ -92,6 +92,9 @@ export default function RootLayout({
           </div>
           <Toaster />
         </ThemeProvider>
+        {/* <!-- Cloudflare Web Analytics --> */}
+        <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "96636a7d428d4d6386398c6327e5852a"}'></script>
+        {/* <!-- End Cloudflare Web Analytics --> */}
       </body>
     </html>
   )
